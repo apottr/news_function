@@ -1,0 +1,27 @@
+service: newsFunction
+
+provider:
+  name: aws
+  runtime: python3.7
+
+functions:
+  newsFunction:
+    handler: newsfunction.handler
+
+plugins:
+  - serverless-python-requirements
+
+custom:
+  pythonRequirements:
+    dockerizePip: true
+    zip: true
+    slim: true
+
+package:
+  exclude:
+    - '**/*'
+    - '*'
+  include:
+    - patch/**
+    - affiliate/**
+    - newsfunction.py

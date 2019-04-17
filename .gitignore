@@ -1,0 +1,5 @@
+.serverless
+.requirements.zip
+package-lock.json
+Pipfile.lock
+node_modules/**

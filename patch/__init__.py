@@ -1,0 +1,1 @@
+from patch.loader import get_points_from_bbox

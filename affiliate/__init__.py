@@ -1,0 +1,1 @@
+from affiliate.processor import get_points_from_bbox
