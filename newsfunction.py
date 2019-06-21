@@ -5,25 +5,36 @@ except ImportError:
 
 from affiliate import get_points_from_bbox as affiliate
 from patch import get_points_from_bbox as patch
-import json
-def runner(bbox):
+import json,boto3
+
+def runner(uuid):
+    bbox = get_bounds_from_dynamo(uuid)
     try:
-        x = affiliate(bbox)
-    except:
+        x = affiliate(bbox,uuid)
+    except Exception as e:
+        print(e)
         x = []
     try:
-        y = patch(bbox)
-    except:
+        y = patch(bbox,uuid)
+    except Exception as e:
+        print(e)
         y = []
-    return x+y
+    return {"patch": y, "affiliate": x}
+
+def get_bounds_from_dynamo(uuid):
+    dynamo = boto3.resource('dynamodb')
+    table = dynamo.Table('bounds-objects')
+    resp = table.get_item(Key={"uuid": uuid})
+    bbox = resp['Item']['bbox']
+    return {k: [float(v[0]),float(v[1])] for k,v in bbox.items()}
+
 
 def handler(event, context):
-    b = json.loads(event["body"])
-    return {"data": runner(b["bbox"])}
+    # add s3 code for uploading data
+    return runner(event["body"])
 
 
 if __name__ == "__main__":
-    bounds = json.dumps({"bbox": {"nw": [-71.30126953125,42.53486817758702], "se": [-70.7958984375,42.204107493733176] }})
-    output = handler({"body": bounds},"")
+    output = handler({"body": "0fe7c2ad-f12c-461e-ab93-a580072fe255"},"")
     with open("output.json","w") as f:
         f.write(json.dumps(output))
